@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[3]:
 
 
 #Imported libraries
@@ -11,7 +11,7 @@ import time
 import heapq as hq
 
 
-
+#Prompts the user to enter start and end nodes/coordinates
 def getEndpoints():
     
     j = -1
@@ -51,7 +51,8 @@ def getEndpoints():
     yend = 249 - yend
     
     return xstart, ystart, xend, yend
-        
+
+#Determines if a user-entered cordinate is a valid number and within range of the arena
 def validEntry(val, max):
     
     if val.isdigit() == False:
@@ -65,6 +66,7 @@ def validEntry(val, max):
     
     return True
 
+#Sets up arena, including unexplored nodes and obstacles (and their borders)
 def setup():
 
     global canvas
@@ -97,7 +99,8 @@ def setup():
     
     cv.fillPoly(canvas, [triangleBorder], gray)
     cv.fillPoly(canvas, [triangle], white)
-    
+
+#Backtracks to determin optimal solution
 def backtrack():
     
     global start
@@ -111,6 +114,7 @@ def backtrack():
         solution.insert(0, [b[0], b[1]])
         b = closedNodes[(b[0], b[1])]
 
+#Checks to see if a node exists in the closed dictionary
 def checkClosed(n):
     
     global closedNodes
@@ -120,6 +124,7 @@ def checkClosed(n):
     
     return False
 
+#Checks to see if a node exists in the open list
 def checkOpen(n):
     
     global openNodes
@@ -131,6 +136,7 @@ def checkOpen(n):
         
     return None
     
+#Checks to see if a node is an obstacle (or its border)
 def checkObstacle(n):
     
     if canvas[n[3][1], n[3][0], 2] == 255:
@@ -368,6 +374,7 @@ l = 0
 current = [0, 0, [-1, -1], [start[0], start[1]]]
 closedNodes[(current[3][0], current[3][1])] = (current[2][0], current[2][1])
 
+#Explore nodes
 while (current[3] != end):
     
     l += 1
@@ -383,13 +390,15 @@ while (current[3] != end):
     
     current = hq.heappop(openNodes)
     closedNodes[(current[3][0], current[3][1])] = (current[2][0], current[2][1])
-    
+
+#Plot start/end nodes
 print("Found Solution!")
 canvas[start[1], start[0]] = (3, 240, 252)
 canvas[end[1], end[0]] = (0, 240, 10)
 cv.imshow("Canvas", canvas)
 cv.waitKey(3000)
     
+#Plot explored nodes 
 for i in closedNodes:
     
     x = i[0]
@@ -401,8 +410,10 @@ for i in closedNodes:
         cv.imshow("Canvas", canvas)
         cv.waitKey(1)
     
+#Backtrack, finding optimal solution
 backtrack()
 
+#Plot optimal solution
 for i in solution:
     
     x = i[0]
